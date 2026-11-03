@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app','cart','razorpay'
+    'app','cart','razorpay',
 ]
 
 MIDDLEWARE = [
