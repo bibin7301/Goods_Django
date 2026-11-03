@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}
+Payment
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-lg mx-auto px-4 py-16">
+
+    <div class="bg-white rounded-2xl shadow-md p-8 text-center">
+
+        <div class="text-6xl mb-4">💳</div>
+
+        <h1 class="text-2xl font-bold text-red-950">
+            Complete your payment
+        </h1>
+
+        <p class="text-gray-500 mt-2">
+            Order #{{ order.id }}
+        </p>
+
+        <p class="text-4xl font-bold text-red-950 mt-6">
+            ₹{{ order.total_amount }}
+        </p>
+
+        <p class="text-sm text-gray-500 mt-2">
+            Secure payment by Razorpay (UPI, cards, net banking)
+        </p>
+
+        <button id="pay-btn" type="button"
+                class="w-full bg-red-950 text-white py-3 rounded-lg mt-8
+                       font-semibold hover:bg-red-900 transition">
+            Pay ₹{{ order.total_amount }}
+        </button>
+
+        <a href="{% url 'cancel_payment' order.id %}"
+           class="block w-full border border-red-950 text-red-950 py-3
+                  rounded-lg mt-3 font-semibold hover:bg-red-50 transition">
+            Cancel order
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Posted back to Django after a successful payment -->
+<form id="verify-form" method="post" action="{% url 'payment_verify' %}" class="hidden">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="rp_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="rp_order_id">
+    <input type="hidden" name="razorpay_signature" id="rp_signature">
+</form>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    const options = {
+        key: "{{ razorpay_key }}",
+        amount: "{{ amount_paise }}",
+        currency: "INR",
+        name: "Goods",
+        description: "Order #{{ order.id }}",
+        order_id: "{{ payment.razorpay_order_id }}",
+        prefill: {
+            name: "{{ order.full_name|escapejs }}",
+            contact: "{{ order.phone|escapejs }}"
+        },
+        theme: { color: "#450a0a" },
+
+        handler: function (response) {
+            document.getElementById("rp_payment_id").value = response.razorpay_payment_id;
+            document.getElementById("rp_order_id").value = response.razorpay_order_id;
+            document.getElementById("rp_signature").value = response.razorpay_signature;
+            document.getElementById("verify-form").submit();
+        }
+    };
+
+    const rzp = new Razorpay(options);
+
+    rzp.on("payment.failed", function (response) {
+        alert("Payment failed: " + response.error.description + "\nYou can try again.");
+    });
+
+    document.getElementById("pay-btn").addEventListener("click", function () {
+        rzp.open();
+    });
+
+    // Open the popup automatically when the page loads
+    window.addEventListener("load", function () { rzp.open(); });
+</script>
+
+{% endblock %}

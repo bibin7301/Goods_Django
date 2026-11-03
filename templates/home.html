@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="min-h-screen bg-red-950 px-4 py-10">
+
+
+<!-- HEADER -->
+<div class="text-center mb-8">
+
+    <h1 class="text-3xl sm:text-4xl font-bold text-white">
+        Our Products
+    </h1>
+
+    <p class="text-red-200 mt-2">
+        Explore our collection
+    </p>
+
+    
+
+
+</div>
+
+
+<!-- PRODUCT GRID -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+            gap-6 max-w-7xl mx-auto">
+
+    {% for good in product %}
+
+    <!-- CARD -->
+    <div class="bg-white rounded-xl overflow-hidden shadow-lg
+                hover:shadow-2xl hover:-translate-y-1
+                transition-all duration-300">
+
+        <!-- IMAGE -->
+        <div class="h-56 bg-gray-100 overflow-hidden">
+
+            <img
+                src="{{ good.image.url }}"
+                alt="{{ good.name }}"
+                class="w-full h-full object-cover
+                       hover:scale-105
+                       transition-transform duration-500"
+            >
+
+        </div>
+
+
+        <!-- CONTENT -->
+        <div class="p-5">
+
+            <!-- NAME -->
+            <h1 class="text-xl font-bold text-red-950">
+                {{ good.name }}
+            </h1>
+
+
+            <!-- PRICE -->
+            <p class="text-2xl font-bold text-red-800 mt-2">
+                ₹{{ good.price }}
+            </p>
+
+
+            <!-- STOCK -->
+            <p class="text-sm text-gray-500 mt-1">
+                Stock: {{ good.stock }}
+            </p>
+
+
+            <!-- AVAILABILITY -->
+            <div class="mt-3">
+
+                {% if good.is_available %}
+
+                <span class="inline-block bg-green-100 text-green-700
+                             px-3 py-1 rounded-full text-xs font-semibold">
+                    Available
+                </span>
+
+                {% else %}
+
+                <span class="inline-block bg-red-100 text-red-700
+                             px-3 py-1 rounded-full text-xs font-semibold">
+                    Out of Stock
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- BUTTON -->
+            <div class="mt-5">
+
+                {% if good.is_available %}
+
+                <a
+                    href="{% url 'details' good.id %}"
+                    class="block text-center
+                           bg-red-950 text-white
+                           py-3 rounded-lg
+                           font-semibold
+                           hover:bg-red-800
+                           transition duration-300">
+
+                    View Product →
+
+                </a>
+
+                {% else %}
+
+                <button
+                    disabled
+                    class="w-full
+                           bg-gray-300 text-gray-500
+                           py-3 rounded-lg
+                           font-semibold
+                           cursor-not-allowed">
+
+                    Currently Unavailable
+
+                </button>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <!-- EMPTY -->
+    <div class="col-span-full text-center">
+
+        <div class="bg-white rounded-xl p-8 max-w-md mx-auto">
+
+            <h2 class="text-2xl font-bold text-red-950">
+                No Products Found
+            </h2>
+
+            <p class="text-gray-500 mt-2">
+                There are currently no products available.
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}
+Place Order
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Page Heading -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white">
+            Checkout
+        </h1>
+
+        <p class="text-red-200 mt-2">
+            Enter your delivery details and confirm your order.
+        </p>
+    </div>
+
+
+    <form method="post" action="{% url 'place_order' %}">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left: Address + Payment -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Delivery Address -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+
+                    <h2 class="text-xl font-bold text-red-950 mb-5">
+                        Delivery Address
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Full name
+                            </label>
+                            <input type="text" name="full_name" required
+                                   value="{{ request.user.get_full_name }}"
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                          focus:outline-none focus:ring-2 focus:ring-red-900">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Phone number
+                            </label>
+                            <input type="tel" name="phone" required
+                                   pattern="[0-9]{10}" maxlength="10"
+                                   placeholder="10-digit mobile number"
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                          focus:outline-none focus:ring-2 focus:ring-red-900">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Address
+                            </label>
+                            <textarea name="address" rows="3" required
+                                      placeholder="House name / number, street, landmark"
+                                      class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                             focus:outline-none focus:ring-2 focus:ring-red-900"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                City
+                            </label>
+                            <input type="text" name="city" required
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                          focus:outline-none focus:ring-2 focus:ring-red-900">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                State
+                            </label>
+                            <input type="text" name="state" required value="Kerala"
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                          focus:outline-none focus:ring-2 focus:ring-red-900">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                PIN code
+                            </label>
+                            <input type="text" name="pincode" required
+                                   pattern="[0-9]{6}" maxlength="6"
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                          focus:outline-none focus:ring-2 focus:ring-red-900">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Payment Method -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+
+                    <h2 class="text-xl font-bold text-red-950 mb-5">
+                        Payment Method
+                    </h2>
+
+                    <div class="space-y-3">
+
+                        <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer
+                                      hover:bg-red-50 transition">
+                            <input type="radio" name="payment_method" value="RAZORPAY"
+                                   checked class="accent-red-950">
+                            <div>
+                                <p class="font-semibold text-gray-800">Pay online</p>
+                                <p class="text-sm text-gray-500">UPI, cards, net banking (Razorpay)</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer
+                                      hover:bg-red-50 transition">
+                            <input type="radio" name="payment_method" value="COD"
+                                   class="accent-red-950">
+                            <div>
+                                <p class="font-semibold text-gray-800">Cash on delivery</p>
+                                <p class="text-sm text-gray-500">Pay when your order arrives</p>
+                            </div>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Right: Order Summary -->
+            <div class="lg:col-span-1">
+
+                <div class="bg-white rounded-xl shadow-md p-6 sticky top-24">
+
+                    <h2 class="text-xl font-bold text-red-950 mb-5">
+                        Order Summary
+                    </h2>
+
+                    <div class="space-y-4 mb-5">
+
+                        {% for item in items %}
+                        <div class="flex items-center gap-3">
+
+                            <img src="{{ item.product.image.url }}"
+                                 alt="{{ item.product.name }}"
+                                 class="w-14 h-14 object-cover rounded-lg shrink-0">
+
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-800 truncate">
+                                    {{ item.product.name }}
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    Qty: {{ item.quantity }}
+                                </p>
+                            </div>
+
+                            <p class="text-sm font-semibold text-gray-800">
+                                ₹{{ item.total_price }}
+                            </p>
+
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="border-t pt-4">
+
+                        <div class="flex justify-between mb-3">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span class="font-semibold">₹{{ total }}</span>
+                        </div>
+
+                        <div class="flex justify-between mb-3">
+                            <span class="text-gray-600">Delivery</span>
+                            <span class="text-green-600 font-semibold">Free</span>
+                        </div>
+
+                        <div class="flex justify-between border-t pt-4 mt-4">
+                            <span class="text-lg font-bold">Total</span>
+                            <span class="text-xl font-bold text-red-950">₹{{ total }}</span>
+                        </div>
+
+                    </div>
+
+                    <button type="submit"
+                            class="block text-center w-full bg-red-950 text-white
+                                   py-3 rounded-lg mt-6 font-semibold
+                                   hover:bg-red-900 transition">
+                        Place Order
+                    </button>
+
+                    <a href="{% url 'cart' %}"
+                       class="block text-center w-full border border-red-950
+                              text-red-950 py-3 rounded-lg mt-3 font-semibold
+                              hover:bg-red-50 transition">
+                        Back to Cart
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
